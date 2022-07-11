@@ -5,6 +5,7 @@ import math
 from mpl_toolkits.mplot3d import Axes3D  
 from mpl_toolkits.mplot3d.proj3d import proj_transform
 from matplotlib.patches import FancyArrowPatch
+import argparse
 
 class Arrow3D(FancyArrowPatch):
 
@@ -49,8 +50,8 @@ def generate_poses():
         f1.write(f"{i} {x} {y} {z} {r.as_quat()[0]} {r.as_quat()[1]} {r.as_quat()[2]} {r.as_quat()[3]}\n")
     f1.close()
 
-def read_poses():
-    data = np.genfromtxt("keyframeTrajectory_512.txt")
+def read_poses(pose_path):
+    data = np.genfromtxt(pose_path)
     times = data[:,0]
     ts = data[:, 1:4]
     qs = data[:, 4:]
@@ -131,9 +132,20 @@ def read_poses():
 
 if __name__=="__main__":
 
+    # to test the visualization script: (generate_poses generates poses in a plane circle around the origin and stores in the trajectories.txt file)
     # generate_poses()
+    # pose_path = "trajectories.txt"
 
-    plot_data, points_x, points_y, points_z = read_poses()
+    # Initialize parser
+    desc = "Python code for visualization of poses obtained from basalt."
+    parser = argparse.ArgumentParser(description = desc)
+
+    # add arguments
+    parser.add_argument("trajectory_path", help="path to .txt file containing poses from basalt", type=str)
+    args = parser.parse_args()
+    pose_path = args.trajectory_path
+
+    plot_data, points_x, points_y, points_z = read_poses(pose_path)
     
     setattr(Axes3D, 'arrow3D', _arrow3D)
     fig = plt.figure()
