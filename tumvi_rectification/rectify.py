@@ -185,8 +185,8 @@ class Rectifier():
         self.T_rect1_cam1[3, 3] = 1.0
         self.T_rect1_cam1[:3, :3] = self.R_rect1_cam1
 
-        self.T_rect0_imu = np.dot(self.T_rect0_cam0, self.T_cam0_imu)
-        self.T_rect1_imu = np.dot(self.T_rect1_cam1, self.T_cam1_imu)   
+        self.T_rect0_imu = self.T_rect0_cam0 @ self.T_cam0_imu
+        self.T_rect1_imu = self.T_rect1_cam1 @ self.T_cam1_imu   
 
         self.T_rect1_rect0 = self.T_cam1_cam0.copy()
         self.T_rect1_rect0[:3,:3] = np.eye(3)
