@@ -29,6 +29,7 @@ class Rectifier():
         parser.add_argument("-rp", "--rectified-dirname", help="Directory name of the rectified dataset", type=str)
         parser.add_argument("-ip", "--intrinsic-path", help="Path for saving the intrinsics file (.yaml). Used only when intrinsics need to be saved without rectifying the entire dataset.", type=str)
         parser.add_argument("-bp", "--basalt-path", help="Path to basalt directory. Use to update rectified camera parameters in basalt.", type = str)
+        parser.add_argument("-bcn", "--basalt-calib-name", help="Name of the calib file for basalt.", type = str)
         
         self.args = parser.parse_args()
 
@@ -55,8 +56,8 @@ class Rectifier():
         elif self.args.intrinsic_path:
             self.save_new_intrinsics(self.args.intrinsic_path)
 
-        if self.args.basalt_path:
-            self.store_basalt_calib(Path(self.args.basalt_path))
+        if self.args.basalt_path and self.args.basalt_calib_name:
+            self.store_basalt_calib(Path(self.args.basalt_path), self.args.basalt_calib_name)
         
     def init_paths(self):
         self.intrinsic_path = self.dataset_dir / "dso/camchain.yaml"
@@ -188,8 +189,7 @@ class Rectifier():
         self.T_rect0_imu = self.T_rect0_cam0 @ self.T_cam0_imu
         self.T_rect1_imu = self.T_rect1_cam1 @ self.T_cam1_imu   
 
-        self.T_rect1_rect0 = self.T_cam1_cam0.copy()
-        self.T_rect1_rect0[:3,:3] = np.eye(3)
+        self.T_rect1_rect0 = self.T_rect1_imu @ np.linalg.inv(self.T_rect0_imu)
         print("[+] Calculated new intrinsics. ")
 
     def rectify(self, rect_dirname):
@@ -283,9 +283,9 @@ class Rectifier():
             yaml.safe_dump(rectified_cam_data, outfile, default_flow_style=None, allow_unicode=False)
         print(f"[+] New intrinsics saved and updated at {new_intrinsic_path}.")
     
-    def store_basalt_calib(self, basalt_dir):
+    def store_basalt_calib(self, basalt_dir, calib_name):
         calib_path = basalt_dir / "data/tumvi_512_ds_calib.json"
-        new_calib_path = basalt_dir / f"data/tumvi_{self.new_imgSize[0]}_pinhole_calib.json"
+        new_calib_path = basalt_dir / f"data/{calib_name}.json"
         
         assert os.path.exists(calib_path)
 
