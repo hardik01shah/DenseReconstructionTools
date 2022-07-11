@@ -1,8 +1,0 @@
-cmake-build*
-.idea
-CMakeLists.txt.user
-build*
-scripts/eval/eval_*
-scripts/eval_full/eval_*
-stats_*.*json
-__pycache__
