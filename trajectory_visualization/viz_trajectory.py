@@ -67,20 +67,21 @@ def read_poses(pose_path):
     f1.write(f"{poses}")
     f1.close()
 
+    arrow_scale = 4
     orig_vec = np.zeros((4,1))
-    orig_vec[3,0] = 1
+    orig_vec[3,0] = arrow_scale
 
     x_vec = np.zeros((4,1))
-    x_vec[0,0] = 1
-    x_vec[3,0] = 1
+    x_vec[0,0] = arrow_scale
+    x_vec[3,0] = arrow_scale
     
     y_vec = np.zeros((4,1))
-    y_vec[1,0] = 1
-    y_vec[3,0] = 1
+    y_vec[1,0] = arrow_scale
+    y_vec[3,0] = arrow_scale
     
     z_vec = np.zeros((4,1))
-    z_vec[2,0] = 1
-    z_vec[3,0] = 1
+    z_vec[2,0] = arrow_scale
+    z_vec[3,0] = arrow_scale
 
     plot_data = {}
     points_x = []
