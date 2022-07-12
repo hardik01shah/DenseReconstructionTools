@@ -37,7 +37,7 @@ monorec_model.to(device)
 monorec_model.eval()
 
 print("Fetching data...")
-index = 440
+index = 412
 
 batch, depth = dataset.__getitem__(index)
 batch = map_fn(batch, unsqueezer)
