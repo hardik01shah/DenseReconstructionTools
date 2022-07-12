@@ -96,8 +96,8 @@ class Rectifier():
             "cy" : self.cam_data["cam1"]["intrinsics"][3]
             }
 
-        # self.T_cam1_cam0 = np.array(self.cam_data["cam1"]["T_cn_cnm1"])
-        self.T_cam1_cam0 = self.T_cam1_imu @ np.linalg.inv(self.T_cam0_imu)
+        self.T_cam1_cam0 = np.array(self.cam_data["cam1"]["T_cn_cnm1"])
+        # self.T_cam1_cam0 = self.T_cam1_imu @ np.linalg.inv(self.T_cam0_imu)
         self.R_cam1_cam0 = self.T_cam1_cam0[:3, :3]
         self.tvec_cam1_cam0 = self.T_cam1_cam0[:3, 3]
 
