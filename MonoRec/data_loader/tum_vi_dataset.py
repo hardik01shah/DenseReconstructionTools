@@ -62,8 +62,8 @@ class TUMVIDataset(Dataset):
 
         self.cam0_pcalib = self.invert_pcalib(np.loadtxt(self.dataset_dir / "dso/cam0/pcalib.txt"))
         self.cam1_pcalib = self.invert_pcalib(np.loadtxt(self.dataset_dir / "dso/cam1/pcalib.txt"))
-        
-        (self.pose_times, self._poses, self.cam0_paths, self.cam1_paths) = self.load_data()
+
+        (self.pose_times, self._poses, self.cam0_paths, self.cam1_paths, self.depth_paths) = self.load_data()
 
         self._offset = (frame_count // 2) * self.dilation
         self._length = len(self.pose_times) - frame_count * dilation
@@ -78,7 +78,11 @@ class TUMVIDataset(Dataset):
         keyframe_intrinsics = self.cam0_intrinsics
         keyframe = self.open_image(index + offset, self.crop_box, index + offset)
         keyframe_pose = self._poses[self.pose_times[index + offset]]
-        keyframe_depth = self.open_depth(index + offset)
+
+        if self.basalt_depth:
+            keyframe_depth = self.open_depth(index + offset, self.crop_box)
+        else:
+            keyframe_depth = self._depth
 
         frames = [self.open_image(index + i, self.crop_box, index + offset) for i in range(0, (frame_count + 1) * self.dilation, self.dilation) if i != offset]
         intrinsics = [self.cam0_intrinsics for _ in range(frame_count)]
@@ -166,6 +170,7 @@ class TUMVIDataset(Dataset):
         pose_map = {}
         cam0_map = {}
         cam1_map = {}
+        depth_map = {}
         
         for i in range(len(data)):
             
@@ -179,6 +184,7 @@ class TUMVIDataset(Dataset):
             pose_map[times[i]] = pose
             cam0_map[times[i]] = self.cam0_images_path / f"{times[i]}.png"
             cam1_map[times[i]] = self.cam1_images_path / f"{times[i]}.png"
+            depth_map[times[i]] = self.keypoint_path / f"{times[i]}.txt"
         
         times.sort()
         """
@@ -192,7 +198,7 @@ class TUMVIDataset(Dataset):
                 f.write(f'{i}\t{tns}\t{cam0_map[tns]}\t{pose_map[tns]}\n')
         print(f"[+]Generated data at {self.debug_path}")
         """
-        return times, pose_map, cam0_map, cam1_map
+        return times, pose_map, cam0_map, cam1_map, depth_map
 
     # load pcalib
     def invert_pcalib(self, pcalib):
@@ -240,13 +246,37 @@ class TUMVIDataset(Dataset):
         else:
             image_tensor = image_tensor.permute(2, 0, 1)
 
+        assert image_tensor.shape[1] == self.target_image_size[0]
+        assert image_tensor.shape[2] == self.target_image_size[1]
+
         return image_tensor
 
         # for rectification check: 
         # https://github.com/tum-vision/mono_dataset_code/blob/master/src/BenchmarkDatasetReader.h
     
-    def open_depth(self, index):
-        return self._depth
+    def open_depth(self, index, crop_box = None):
+        
+        depth = torch.zeros(1, self.orig_image_size[0], self.orig_image_size[1], dtype=torch.float32)
+        with open(self.depth_paths[self.pose_times[index]], "r") as f:
+            lines = f.readlines()
+        
+        num_points = int(lines[0])
+        if num_points > 0:
+            for l in lines[1:]:
+                tmp = l.split()
+                x, y, i_depth = round(float(tmp[0])), round(float(tmp[1])), float(tmp[2])
+                depth[0][y][x] = i_depth
+        
+        if crop_box:
+            print(crop_box)
+            depth_cropped = depth[:,crop_box[1]:crop_box[3],crop_box[0]:crop_box[2]]
+        else:
+            depth_cropped = depth
+
+        assert depth_cropped.shape[1] == self.target_image_size[0]
+        assert depth_cropped.shape[2] == self.target_image_size[1]
+
+        return depth_cropped
 
 def format_intrinsics(cam0_intrinsics, cam1_intrinsics, target_image_size, orig_image_size):
 

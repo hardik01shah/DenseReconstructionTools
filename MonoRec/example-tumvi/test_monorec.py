@@ -41,7 +41,7 @@ index = 464
 
 batch, depth = dataset.__getitem__(index)
 batch = map_fn(batch, unsqueezer)
-# depth = map_fn(depth, unsqueezer)
+depth = map_fn(depth, unsqueezer)
 
 batch = to(batch, device)
 
@@ -52,7 +52,7 @@ with torch.no_grad():
 
 prediction = data["result"][0, 0].cpu()
 mask = data["cv_mask"][0, 0].cpu()
-# depth = depth[0, 0].cpu()
+depth = depth[0, 0].cpu()
 
 e = time.time()
 print(f"Inference took {e - s}s")
