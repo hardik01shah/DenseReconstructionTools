@@ -146,6 +146,7 @@ std::mutex m;
 std::condition_variable cv;
 bool step_by_step = false;
 size_t max_frames = 0;
+bool save_keyframe_data = false;
 
 std::atomic<bool> terminate = false;
 
@@ -246,6 +247,7 @@ int main(int argc, char** argv) {
   app.add_option("--save-groundtruth", trajectory_groundtruth,
                  "In addition to trajectory, save also ground turth");
   app.add_option("--use-imu", use_imu, "Use IMU.");
+  app.add_option("--save-keyframe-data", save_keyframe_data, "Save keyframe poses and keypoints.");
   app.add_option("--use-double", use_double, "Use double not float.");
   app.add_option(
       "--max-frames", max_frames,
@@ -315,7 +317,7 @@ int main(int argc, char** argv) {
   basalt::MargDataSaver::Ptr marg_data_saver;
 
   if (!marg_data_path.empty()) {
-    marg_data_saver.reset(new basalt::MargDataSaver(marg_data_path));
+    marg_data_saver.reset(new basalt::MargDataSaver(marg_data_path, save_keyframe_data, calib));
     vio->out_marg_queue = &marg_data_saver->in_marg_queue;
 
     // Save gt.

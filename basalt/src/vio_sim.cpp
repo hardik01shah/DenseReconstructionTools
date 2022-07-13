@@ -192,7 +192,7 @@ int main(int argc, char** argv) {
 
   basalt::MargDataSaver::Ptr mds;
   if (!marg_data_path.empty()) {
-    mds.reset(new basalt::MargDataSaver(marg_data_path));
+    mds.reset(new basalt::MargDataSaver(marg_data_path, false, calib));
   }
 
   load_data(cam_calib_path);
