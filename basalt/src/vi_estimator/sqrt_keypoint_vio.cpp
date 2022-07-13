@@ -774,6 +774,14 @@ void SqrtKeypointVioEstimator<Scalar_>::marginalize(
           m->opt_flow_res.emplace_back(prev_opt_flow_res.at(t));
         }
 
+        // add keypoints from each frame(total 8) to MargDataPtr 
+        for (int64_t t : m->kfs_all) {
+          std::vector<Eigen::aligned_vector<Eigen::Vector4d>> projections;
+          projections.resize(prev_opt_flow_res.at(t)->observations.size());
+          computeProjections(projections, t);
+          m->frame_keypoints.insert({t, projections});
+        }
+
         out_marg_queue->push(m);
       }
     }
