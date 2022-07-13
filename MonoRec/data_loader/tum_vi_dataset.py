@@ -130,7 +130,7 @@ class TUMVIDataset(Dataset):
             rgb_map[times[i]] = self.images_path / f"{times[i]}.png"
         
         times.sort()
-
+        """
         print("Generating keyframes...")
         if os.path.isdir(self.debug_path):
             shutil.rmtree(self.debug_path)
@@ -140,7 +140,7 @@ class TUMVIDataset(Dataset):
                 shutil.copy2(rgb_map[tns], self.debug_path / f"keyframes/all/{i}.png")
                 f.write(f'{i}\t{tns}\t{rgb_map[tns]}\t{pose_map[tns]}\n')
         print(f"[+]Generated data at {self.debug_path}")
-
+        """
         return times, pose_map, rgb_map
 
     # load pcalib
@@ -161,8 +161,10 @@ class TUMVIDataset(Dataset):
         img = img.convert('RGB')
 
         if crop_box:
-            img = img.resize((self.resz_shape[1], self.resz_shape[0]), resample=Image.BILINEAR)
             img = img.crop(crop_box)
+
+        if self.resz_shape:
+            img = img.resize((self.resz_shape[1], self.resz_shape[0]), resample=Image.BILINEAR)
 
         if keyframe_index:
             kf_dir = self.debug_path / f"keyframes/{keyframe_index}"
@@ -187,63 +189,30 @@ class TUMVIDataset(Dataset):
         return self._depth
 
 def format_intrinsics(intrinsics, target_image_size, orig_image_size):
-    fx = intrinsics[0,0].item()
-    fy = intrinsics[1,1].item()
+
     cx = intrinsics[0,2].item()
     cy = intrinsics[1,2].item()
 
-    (kitti_h, kitti_w) = (256, 512)
-    (h, w) = target_image_size
+    (new_h, new_w) = target_image_size
     (orig_h, orig_w) = orig_image_size
 
-    fx_kitti = 489.2307
-    fy_kitti = 489.2307   
+    assert new_h < orig_h
+    assert new_w == orig_w
 
-    """
-    w_crop = (fx * kitti_w)//fx_kitti
-    h_crop = (fy * kitti_h)//fy_kitti
-
-    scale_w = w / w_crop
-    fx_new = fx * scale_w
-
-    scale_h = h / h_crop
-    fy_new = fy * scale_h
-
-    cx_new = (cx - (orig_w - w_crop)/2) * scale_w
-    cy_new = (cy - (orig_h - h_crop)/2) * scale_h
-
-    """
-
-    scale_w = fx_kitti / fx
-    scale_h = fy_kitti / fy
-    
-    w_new = int(scale_w * orig_w)
-    h_new = int(scale_h * orig_h)
-
-    scale_w = w_new / orig_w
-    scale_h = h_new / orig_h
-
-    fx_new = fx * scale_w
-    fy_new = fy * scale_h
-    cx_new = (cx + 0.5)*scale_w - 0.5 - (w_new - w)//2
-    cy_new = (cy + 0.5)*scale_h - 0.5 - (h_new - h)//2
+    cx_new = (cx + 0.5) - 0.5 - (orig_w - new_w)//2
+    cy_new = (cy + 0.5) - 0.5 - (orig_h - new_h)//2
 
     intrinsics_new = intrinsics.clone()
-    intrinsics_new[0,0] = fx_new
-    intrinsics_new[1,1] = fy_new
+
     intrinsics_new[0,2] = cx_new
     intrinsics_new[1,2] = cy_new
 
-    box = ((w_new - w)//2, (h_new - h)//2, (w_new - w)//2 + w, (h_new - h)//2 + h)
+    box = ((orig_w - new_w)//2, (orig_h - new_h)//2, (orig_w - new_w)//2 + new_w, (orig_h - new_h)//2 + new_h)
 
     print(f"Orig Intrinsics: {intrinsics}")
     print(f"New Intrinsics: {intrinsics_new}")
-    print(f"Scale_w: {scale_w}")
-    print(f"Scale_h: {scale_h}")
-    # print(f"w_crop: {w_crop}")
-    # print(f"h_crop: {h_crop}")
-    print(f"w_new: {w_new}")
-    print(f"h_new: {h_new}")
+    print(f"new_w: {new_w}")
+    print(f"new_h: {new_h}")
     print(box)
 
-    return intrinsics_new, (w_new, h_new), box
+    return intrinsics_new, None, box
