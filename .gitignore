@@ -2,3 +2,5 @@ trajectory_visualization/poses.txt
 MonoRec/example-tumvi/depth.png
 MonoRec/example-tumvi/mask.png
 MonoRec/example-tumvi/kf.png
+MonoRec/example/test.txt
+extras/testfile
