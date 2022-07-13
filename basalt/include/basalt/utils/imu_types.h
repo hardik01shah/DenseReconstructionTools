@@ -339,6 +339,7 @@ struct MargData {
   bool use_imu;
 
   std::vector<OpticalFlowResult::Ptr> opt_flow_res;
+  std::map<int64_t, std::vector<Eigen::aligned_vector<Eigen::Vector4d>>> frame_keypoints;
 };
 
 struct RelPoseFactor {
