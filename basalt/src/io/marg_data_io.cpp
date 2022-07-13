@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace basalt {
 
-MargDataSaver::MargDataSaver(const std::string& path) {
+MargDataSaver::MargDataSaver(const std::string& path, const bool save_keyframe_data, const basalt::Calibration<double> calib) {
   fs::remove_all(path);
   fs::create_directory(path);
 
@@ -51,10 +51,24 @@ MargDataSaver::MargDataSaver(const std::string& path) {
 
   in_marg_queue.set_capacity(1000);
 
-  auto save_func = [&, path]() {
+  auto save_func = [&, path, save_keyframe_data, calib]() {
     basalt::MargData::Ptr data;
 
     std::unordered_set<int64_t> processed_opt_flow;
+
+    std::string poses_path = path + "/poses/";
+    std::string keypoints_path = path + "/keypoints/";
+
+    if(save_keyframe_data){
+      fs::create_directory(poses_path);
+      fs::create_directory(keypoints_path);
+    }
+    const Sophus::SE3d T_imu_cam = calib.T_i_c[0];
+
+    std::string poses_cam_path = poses_path + "keyframeTrajectory_cam.txt";
+    std::string poses_imu_path = poses_path + "keyframeTrajectory_imu.txt";
+    std::ofstream fw_poses_cam(poses_cam_path, std::ofstream::out);
+    std::ofstream fw_poses_imu(poses_imu_path, std::ofstream::out);
 
     while (true) {
       in_marg_queue.pop(data);
@@ -71,6 +85,46 @@ MargDataSaver::MargDataSaver(const std::string& path) {
         }
         os.close();
 
+        if(save_keyframe_data){
+          
+          // save poses in imu frame and cam frame
+          for(auto it=data->frame_poses.cbegin(); it!=data->frame_poses.cend(); ++it){
+            if(it->first == kf_id){
+              const Sophus::SE3d keyframePose_imu = it->second.getPoseLin();
+              const Sophus::SE3d keyframePose_cam = keyframePose_imu * T_imu_cam;
+
+              fw_poses_imu << std::scientific << std::setprecision(18) << kf_id << " "
+                << keyframePose_imu.translation().x() << " " << keyframePose_imu.translation().y() << " "
+                << keyframePose_imu.translation().z() << " " << keyframePose_imu.unit_quaternion().x() << " "
+                << keyframePose_imu.unit_quaternion().y() << " " << keyframePose_imu.unit_quaternion().z()
+                << " " << keyframePose_imu.unit_quaternion().w() << std::endl;
+
+              fw_poses_cam << std::scientific << std::setprecision(18) << kf_id << " "
+                << keyframePose_cam.translation().x() << " " << keyframePose_cam.translation().y() << " "
+                << keyframePose_cam.translation().z() << " " << keyframePose_cam.unit_quaternion().x() << " "
+                << keyframePose_cam.unit_quaternion().y() << " " << keyframePose_cam.unit_quaternion().z()
+                << " " << keyframePose_cam.unit_quaternion().w() << std::endl;
+              
+              break;
+            }
+          }
+
+          // save keypoints for each keyframe
+          std::ofstream fw_keypoints(keypoints_path + std::to_string(kf_id) + ".txt", std::ofstream::out);
+          for(auto it=data->frame_keypoints.cbegin(); it!=data->frame_keypoints.cend(); ++it){
+            if(it->first == kf_id){
+              const auto& points = it->second[0];
+              fw_keypoints << points.size() << std::endl;
+              for (const auto& c : points) {
+                // x y inverse_depth
+                fw_keypoints << c[0] << " " << c[1] << " " << c[2] << std::endl;
+              }   
+              break;           
+            }
+          }
+          fw_keypoints.close();
+        }
+
         for (const auto& d : data->opt_flow_res) {
           if (processed_opt_flow.count(d->t_ns) == 0) {
             save_image_queue.push(d);
@@ -84,6 +138,10 @@ MargDataSaver::MargDataSaver(const std::string& path) {
       }
     }
 
+    if(save_keyframe_data){
+      fw_poses_cam.close();
+      fw_poses_imu.close();
+    }
     std::cout << "Finished MargDataSaver" << std::endl;
   };
 
