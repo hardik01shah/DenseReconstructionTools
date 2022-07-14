@@ -4,6 +4,7 @@ from .kitti_odometry_dataset import *
 from .oxford_robotcar_dataset import OxfordRobotCarDataset
 from .tum_mono_vo_dataset import *
 from .tum_rgbd_dataset import *
+from .tum_vi_dataset import *
 
 
 class KittiOdometryDataloader(BaseDataLoader):
@@ -45,4 +46,10 @@ class TUMRGBDDataloader(BaseDataLoader):
 
     def __init__(self, batch_size=1, shuffle=True, validation_split=0.0, num_workers=4, **kwargs):
         self.dataset = TUMRGBDDataset(**kwargs)
+        super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
+
+class TUMVIDataloader(BaseDataLoader):
+
+    def __init__(self, batch_size=1, shuffle=True, validation_split=0.0, num_workers=4, **kwargs):
+        self.dataset = TUMVIDataset(**kwargs)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
