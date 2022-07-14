@@ -45,6 +45,8 @@ class TUMVIDataset(Dataset):
         self.basalt_depth = basalt_depth
         self.return_stereo = return_stereo
 
+        self.debug = False
+
         self.intrinsic_path = self.dataset_dir / "dso/camchain.yaml"
         self.pose_path = self.dataset_dir / "basalt_keyframe_data/poses/keyframeTrajectory_cam.txt"
         self.keypoint_path = self.dataset_dir / "basalt_keyframe_data/keypoints/"
@@ -227,7 +229,7 @@ class TUMVIDataset(Dataset):
         if self.resz_shape:
             img = img.resize((self.resz_shape[1], self.resz_shape[0]), resample=Image.BILINEAR)
 
-        if keyframe_index:
+        if keyframe_index and self.debug:
             kf_dir = self.debug_path / f"keyframes/{keyframe_index}"
             if(not os.path.isdir(kf_dir)):
                 os.mkdir(kf_dir)
@@ -268,7 +270,6 @@ class TUMVIDataset(Dataset):
                 depth[0][y][x] = i_depth
         
         if crop_box:
-            print(crop_box)
             depth_cropped = depth[:,crop_box[1]:crop_box[3],crop_box[0]:crop_box[2]]
         else:
             depth_cropped = depth
