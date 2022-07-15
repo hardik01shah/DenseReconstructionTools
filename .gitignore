@@ -4,3 +4,6 @@ MonoRec/example-tumvi/mask.png
 MonoRec/example-tumvi/kf.png
 MonoRec/example/test.txt
 extras/testfile
+extras/stats_all.ubjson
+extras/stats_sums.ubjson
+extras/stats_vio.ubjson
