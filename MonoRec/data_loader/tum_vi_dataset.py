@@ -40,6 +40,7 @@ class TUMVIDataset(Dataset):
         """
         self.dataset_dir = Path(dataset_dir)
         self.frame_count = frame_count
+        self.sequences = sequences
         self.dilation = dilation
         self.target_image_size = target_image_size
         self.basalt_depth = basalt_depth
@@ -47,48 +48,75 @@ class TUMVIDataset(Dataset):
 
         self.debug = False
 
-        self.intrinsic_path = self.dataset_dir / "dso/camchain.yaml"
-        self.pose_path = self.dataset_dir / "basalt_keyframe_data/poses/keyframeTrajectory_cam.txt"
-        self.keypoint_path = self.dataset_dir / "basalt_keyframe_data/keypoints/"
-        self.cam0_images_path = self.dataset_dir / "mav0/cam0/data/"
-        self.cam1_images_path = self.dataset_dir / "mav0/cam1/data/"
-        self.debug_path = self.dataset_dir / "monorec_data"
-
-        assert os.path.exists(self.intrinsic_path)
-        assert os.path.exists(self.pose_path)
-        assert os.path.isdir(self.keypoint_path)
-        assert os.path.isdir(self.cam0_images_path)
-        assert os.path.isdir(self.cam1_images_path)
-
-        self.cam0_intrinsics, self.cam1_intrinsics, self.orig_image_size = self.load_intrinsics()
-
-        self.cam0_pcalib = self.invert_pcalib(np.loadtxt(self.dataset_dir / "dso/cam0/pcalib.txt"))
-        self.cam1_pcalib = self.invert_pcalib(np.loadtxt(self.dataset_dir / "dso/cam1/pcalib.txt"))
-
-        (self.pose_times, self._poses, self.cam0_paths, self.cam1_paths, self.depth_paths) = self.load_data()
+        if self.sequences is None:
+            self.sequences = [f"{i:02d}" for i in range(28)]
 
         self._offset = (frame_count // 2) * self.dilation
-        self._length = len(self.pose_times) - frame_count * dilation
+        extra_frames = frame_count * dilation
+
+        self.cam0_intrinsics = {}
+        self.cam1_intrinsics = {}
+        self.T_cam1_cam0 = {}
+        self.orig_image_size = {}
+        self.resz_shape = {}
+        self.crop_box = {}
+
+        self.cam0_pcalib = {}
+        self.cam1_pcalib = {}
+        
+        self.pose_times = {}
+        self._poses = {}
+        self.cam0_paths = {}
+        self.cam1_paths = {}
+        self.depth_paths = {}
+        self._dataset_sizes = {}
+
+        dataset_len = 0
+        for seq in self.sequences:
+
+            cam0_i, cam1_i, img_size = self.load_intrinsics(seq)
+            self.orig_image_size[seq] = img_size
+
+            cam0_i, cam1_i, _resz_shape, _box = format_intrinsics(cam0_i, cam1_i, self.target_image_size, img_size)
+            self.cam0_intrinsics[seq] = cam0_i
+            self.cam1_intrinsics[seq] = cam1_i
+            self.resz_shape[seq] = _resz_shape
+            self.crop_box[seq] = _box
+
+            self.cam0_pcalib[seq] = self.invert_pcalib(self.dataset_dir / f"{seq}/dso/cam0/pcalib.txt")
+            self.cam1_pcalib[seq] = self.invert_pcalib(self.dataset_dir / f"{seq}/dso/cam1/pcalib.txt")
+
+            times, poses, cam0_pths, cam1_pths, depth_pths = self.load_data(seq)
+            self.pose_times[seq] = times
+            self._poses[seq] = poses
+            self.cam0_paths[seq] = cam0_pths
+            self.cam1_paths[seq] = cam1_pths
+            self.depth_paths[seq] = depth_pths
+            
+            self._dataset_sizes[seq] = len(times) - extra_frames
+            dataset_len += len(times) - extra_frames
+
+        
+        self._length = dataset_len
         self._depth = torch.zeros((1, target_image_size[0], target_image_size[1]), dtype=torch.float32)
 
-        self.cam0_intrinsics, self.cam1_intrinsics, self.resz_shape, self.crop_box = format_intrinsics(self.cam0_intrinsics, self.cam1_intrinsics, self.target_image_size, self.orig_image_size)
-
     def __getitem__(self, index: int):
+        seq, index = self.get_dataset_index(index)
         frame_count = self.frame_count
         offset = self._offset
 
-        keyframe_intrinsics = self.cam0_intrinsics
-        keyframe = self.open_image(index + offset, self.crop_box, index + offset)
-        keyframe_pose = self._poses[self.pose_times[index + offset]]
+        keyframe_intrinsics = self.cam0_intrinsics[seq]
+        keyframe = self.open_image(index + offset, seq, self.crop_box[seq], index + offset)
+        keyframe_pose = self._poses[seq][self.pose_times[seq][index + offset]]
 
         if self.basalt_depth:
-            keyframe_depth = self.open_depth(index + offset, self.crop_box)
+            keyframe_depth = self.open_depth(index + offset, seq, self.crop_box[seq])
         else:
             keyframe_depth = self._depth
 
-        frames = [self.open_image(index + i, self.crop_box, index + offset) for i in range(0, (frame_count + 1) * self.dilation, self.dilation) if i != offset]
-        intrinsics = [self.cam0_intrinsics for _ in range(frame_count)]
-        poses = [self._poses[self.pose_times[index + i]] for i in range(0, (frame_count + 1) * self.dilation, self.dilation) if i != offset]
+        frames = [self.open_image(index + i, seq, self.crop_box[seq], index + offset) for i in range(0, (frame_count + 1) * self.dilation, self.dilation) if i != offset]
+        intrinsics = [self.cam0_intrinsics[seq] for _ in range(frame_count)]
+        poses = [self._poses[seq][self.pose_times[seq][index + i]] for i in range(0, (frame_count + 1) * self.dilation, self.dilation) if i != offset]
 
         data = {
             "keyframe": keyframe,
@@ -97,27 +125,38 @@ class TUMVIDataset(Dataset):
             "frames": frames,
             "poses": poses,
             "intrinsics": intrinsics,
-            "sequence": torch.tensor([0]),
-            "image_id": torch.tensor([index + offset])
+            "sequence": torch.tensor([int(seq)], dtype=torch.int32),
+            "image_id": torch.tensor([index + offset], dtype=torch.int32)
         }
 
         if self.return_stereo:
-            stereoframe = self.open_image(index + offset, self.crop_box, keyframe_index=None, stereo=True)
+            stereoframe = self.open_image(index + offset, seq, self.crop_box[seq], keyframe_index=None, stereo=True)
 
             # keyframe_pose = T_world_cam0
             # stereoframe_pose = T_world_cam1 = T_world_cam0 @ inv(T_cam0_cam1)
-            stereoframe_pose = keyframe_pose @ torch.inverse(self.T_cam1_cam0)
+            stereoframe_pose = keyframe_pose @ torch.inverse(self.T_cam1_cam0[seq])
             
             data["stereoframe"] = stereoframe
             data["stereoframe_pose"] = stereoframe_pose
-            data["stereoframe_intrinsics"] = self.cam1_intrinsics
+            data["stereoframe_intrinsics"] = self.cam1_intrinsics[seq]
 
         return data, keyframe_depth
 
     def __len__(self) -> int:
         return self._length
+    
+    def get_dataset_index(self, index: int):
+        for seq, seq_len in self._dataset_sizes.items():
+            if index >= seq_len:
+                index = index - seq_len
+            else:
+                return seq, index
+        return None, None
 
-    def load_intrinsics(self):
+    def load_intrinsics(self, seq):
+
+        self.intrinsic_path = self.dataset_dir / f"{seq}/dso/camchain.yaml"
+        assert os.path.exists(self.intrinsic_path)
 
         stream = open(self.intrinsic_path, "r")
         try:
@@ -155,13 +194,23 @@ class TUMVIDataset(Dataset):
 
         img_size = (cam_data["cam0"]["resolution"][0], cam_data["cam0"]["resolution"][1])
         
-        self.T_cam1_cam0 = torch.tensor(np.array(cam_data["cam1"]["T_cn_cnm1"]), dtype=torch.float32)
+        self.T_cam1_cam0[seq] = torch.tensor(np.array(cam_data["cam1"]["T_cn_cnm1"]), dtype=torch.float32)
 
         return torch.tensor(cam0_intrinsic_mx, dtype=torch.float32), torch.tensor(cam1_intrinsic_mx, dtype=torch.float32), img_size
 
-    def load_data(self):
+    def load_data(self, seq):
 
-        with open(self.pose_path, "r") as f:
+        pose_path = self.dataset_dir / f"{seq}/basalt_keyframe_data/poses/keyframeTrajectory_cam.txt"
+        keypoint_path = self.dataset_dir / f"{seq}/basalt_keyframe_data/keypoints/"
+        cam0_images_path = self.dataset_dir / f"{seq}/mav0/cam0/data/"
+        cam1_images_path = self.dataset_dir / f"{seq}/mav0/cam1/data/"
+
+        assert os.path.exists(pose_path)
+        assert os.path.isdir(keypoint_path)
+        assert os.path.isdir(cam0_images_path)
+        assert os.path.isdir(cam1_images_path)
+
+        with open(pose_path, "r") as f:
             lines = f.readlines()
 
         data = np.genfromtxt(lines, dtype=np.float64)
@@ -184,26 +233,29 @@ class TUMVIDataset(Dataset):
             pose = rs.to(torch.float32)
 
             pose_map[times[i]] = pose
-            cam0_map[times[i]] = self.cam0_images_path / f"{times[i]}.png"
-            cam1_map[times[i]] = self.cam1_images_path / f"{times[i]}.png"
-            depth_map[times[i]] = self.keypoint_path / f"{times[i]}.txt"
+            cam0_map[times[i]] = cam0_images_path / f"{times[i]}.png"
+            cam1_map[times[i]] = cam1_images_path / f"{times[i]}.png"
+            depth_map[times[i]] = keypoint_path / f"{times[i]}.txt"
         
         times.sort()
         """
+        debug_path = self.dataset_dir / f"{seq}/monorec_data"
         print("Generating keyframes...")
-        if os.path.isdir(self.debug_path):
-            shutil.rmtree(self.debug_path)
-        os.makedirs(self.debug_path / "keyframes/all/")
-        with open(self.debug_path / "time_index_mapping.txt", 'w') as f: 
+        if os.path.isdir(debug_path):
+            shutil.rmtree(debug_path)
+        os.makedirs(debug_path / "keyframes/all/")
+        with open(debug_path / "time_index_mapping.txt", 'w') as f: 
             for i, tns in enumerate(times): 
-                shutil.copy2(cam0_map[tns], self.debug_path / f"keyframes/all/{i}.png")
+                shutil.copy2(cam0_map[tns], debug_path / f"keyframes/all/{i}.png")
                 f.write(f'{i}\t{tns}\t{cam0_map[tns]}\t{pose_map[tns]}\n')
-        print(f"[+]Generated data at {self.debug_path}")
+        print(f"[+]Generated data at {debug_path} for sequence {seq}")
         """
         return times, pose_map, cam0_map, cam1_map, depth_map
 
     # load pcalib
-    def invert_pcalib(self, pcalib):
+    def invert_pcalib(self, pcalib_path):
+        assert os.path.exists(pcalib_path)
+        pcalib = np.loadtxt(pcalib_path)
         inv_pcalib = torch.zeros(256, dtype=torch.float32)
         j = 0
         for i in range(256):
@@ -212,25 +264,26 @@ class TUMVIDataset(Dataset):
             inv_pcalib[i] = j
         return inv_pcalib
 
-    def open_image(self, index, crop_box = None, keyframe_index = None, stereo = False):
+    def open_image(self, index, seq, crop_box = None, keyframe_index = None, stereo = False):
         
-        assert os.path.exists(self.cam0_paths[self.pose_times[index]])
-        assert os.path.exists(self.cam1_paths[self.pose_times[index]])
+        assert os.path.exists(self.cam0_paths[seq][self.pose_times[seq][index]])
+        assert os.path.exists(self.cam1_paths[seq][self.pose_times[seq][index]])
 
         if stereo:
-            img = Image.open(self.cam1_paths[self.pose_times[index]])
+            img = Image.open(self.cam1_paths[seq][self.pose_times[seq][index]])
         else:
-            img = Image.open(self.cam0_paths[self.pose_times[index]])
+            img = Image.open(self.cam0_paths[seq][self.pose_times[seq][index]])
         img = img.convert('RGB')
 
         if crop_box:
             img = img.crop(crop_box)
 
-        if self.resz_shape:
-            img = img.resize((self.resz_shape[1], self.resz_shape[0]), resample=Image.BILINEAR)
+        if self.resz_shape[seq]:
+            img = img.resize((self.resz_shape[seq][1], self.resz_shape[seq][0]), resample=Image.BILINEAR)
 
         if keyframe_index and self.debug:
-            kf_dir = self.debug_path / f"keyframes/{keyframe_index}"
+            debug_path = self.dataset_dir / f"{seq}/monorec_data"
+            kf_dir = debug_path / f"keyframes/{keyframe_index}"
             if(not os.path.isdir(kf_dir)):
                 os.mkdir(kf_dir)
             img.save(f'{kf_dir}/{index}.png')
@@ -238,9 +291,9 @@ class TUMVIDataset(Dataset):
         image_tensor = torch.tensor(np.array(img)).to(dtype=torch.float32)
 
         if stereo:
-            image_tensor = self.cam1_pcalib[image_tensor.to(dtype=torch.long)]
+            image_tensor = self.cam1_pcalib[seq][image_tensor.to(dtype=torch.long)]
         else:
-            image_tensor = self.cam0_pcalib[image_tensor.to(dtype=torch.long)]
+            image_tensor = self.cam0_pcalib[seq][image_tensor.to(dtype=torch.long)]
         
         image_tensor = image_tensor / 255 - .5
         if len(image_tensor.shape) == 2:
@@ -256,10 +309,12 @@ class TUMVIDataset(Dataset):
         # for rectification check: 
         # https://github.com/tum-vision/mono_dataset_code/blob/master/src/BenchmarkDatasetReader.h
     
-    def open_depth(self, index, crop_box = None):
+    def open_depth(self, index, seq, crop_box = None):
         
-        depth = torch.zeros(1, self.orig_image_size[0], self.orig_image_size[1], dtype=torch.float32)
-        with open(self.depth_paths[self.pose_times[index]], "r") as f:
+        depth = torch.zeros(1, self.orig_image_size[seq][0], self.orig_image_size[seq][1], dtype=torch.float32)
+        assert os.path.exists(self.depth_paths[seq][self.pose_times[seq][index]])
+
+        with open(self.depth_paths[seq][self.pose_times[seq][index]], "r") as f:
             lines = f.readlines()
         
         num_points = int(lines[0])
