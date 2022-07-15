@@ -17,14 +17,15 @@ desc = "Test forward pass for Monorec on TUM-VI dataset."
 parser = argparse.ArgumentParser(description = desc)
 
 # add arguments
-parser.add_argument("dataset_path", help="path to tum-vi sequence", type=str)
+parser.add_argument("dataset_path", help="path to tum-vi dataset", type=str)
+# parser.add_argument("-s", "--sequence", help="listof sequences", type=str)
 args = parser.parse_args()
 
 target_image_size = (256, 512)
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
-dataset = TUMVIDataset(dataset_dir = args.dataset_path, target_image_size = target_image_size)
+dataset = TUMVIDataset(dataset_dir=args.dataset_path, sequences=None, target_image_size=target_image_size, basalt_depth=True)
 
 checkpoint_location = Path("../saved/checkpoints/monorec_depth_ref.pth")
 
@@ -37,7 +38,7 @@ monorec_model.to(device)
 monorec_model.eval()
 
 print("Fetching data...")
-index = 464
+index = 4640
 
 batch, depth = dataset.__getitem__(index)
 batch = map_fn(batch, unsqueezer)
