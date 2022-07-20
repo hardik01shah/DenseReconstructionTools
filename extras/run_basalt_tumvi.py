@@ -42,9 +42,8 @@ if __name__=="__main__":
         "--cam-calib", "",              # 3 4
         "--dataset-type", "euroc",      # 5 6
         "--config-path", "",            # 7 8
-        "--marg-data", "",              # 9 10
-        "--show-gui", "0",              # 11 12
-        "--save-keyframe-data", "1"]    # 13 14
+        "--show-gui", "0",              # 9 10
+        "--keyframe-data", ""]          # 11 12
 
     for seq in sequences:
         print("=" * 20)
@@ -52,7 +51,7 @@ if __name__=="__main__":
 
         seq_path = tumvi_dir / f"{seq}"
         calib_path = seq_path / f"basalt_calib.json" 
-        marg_path = seq_path / f"basalt_keyframe_data"   
+        kf_data_path = seq_path / f"basalt_keyframe_data"   
 
 
         bash_cmd = cmd_list.copy()
@@ -60,7 +59,7 @@ if __name__=="__main__":
         bash_cmd[2] = seq_path 
         bash_cmd[4] = calib_path 
         bash_cmd[8] = basalt_config_path 
-        bash_cmd[10] = marg_path 
+        bash_cmd[12] = kf_data_path 
         print(f"executing {bash_cmd}")
         print()
         execute(bash_cmd)

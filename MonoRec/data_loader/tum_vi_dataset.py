@@ -201,7 +201,7 @@ class TUMVIDataset(Dataset):
     def load_data(self, seq):
 
         pose_path = self.dataset_dir / f"{seq}/basalt_keyframe_data/poses/keyframeTrajectory_cam.txt"
-        keypoint_path = self.dataset_dir / f"{seq}/basalt_keyframe_data/keypoints/"
+        keypoint_path = self.dataset_dir / f"{seq}/basalt_keyframe_data/keypoints_viz/"
         cam0_images_path = self.dataset_dir / f"{seq}/mav0/cam0/data/"
         cam1_images_path = self.dataset_dir / f"{seq}/mav0/cam1/data/"
 
