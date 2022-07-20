@@ -15,12 +15,36 @@
   "data_loader": {
     "type": "TUMVIDataloader",
     "args": {
-      "dataset_dir": "../../tumvi_data/test/",
-      "batch_size": 8,
+      "dataset_dir": "../../tumvi-dataset/rectified",
+      "batch_size": 16,
       "frame_count": 2,
       "shuffle": true,
       "validation_split": 0,
-      "num_workers": 16,
+      "num_workers": 8,
+      "sequences": [
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27"
+      ],
       "target_image_size": [
         256,
         512
@@ -32,12 +56,20 @@
   "val_data_loader": {
     "type": "TUMVIDataloader",
     "args": {
-      "dataset_dir": "../../tumvi_data/test/",
+      "dataset_dir": "../../tumvi-dataset/rectified",
       "batch_size": 16,
       "frame_count": 2,
       "shuffle": false,
       "validation_split": 0,
       "num_workers": 2,
+      "sequences": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "11"
+      ],
       "target_image_size": [
         256,
         512
