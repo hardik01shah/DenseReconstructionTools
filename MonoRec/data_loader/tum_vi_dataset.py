@@ -364,11 +364,11 @@ def format_intrinsics(cam0_intrinsics, cam1_intrinsics, target_image_size, orig_
     cam1_intrinsics_new[1,2] = cam1_cy_new
     
     box = ((orig_w - new_w)//2, (orig_h - new_h)//2, (orig_w - new_w)//2 + new_w, (orig_h - new_h)//2 + new_h)
-
+    """
     print(f"Orig Intrinsics: {cam0_intrinsics}")
     print(f"New Intrinsics: {cam0_intrinsics_new}")
     print(f"new_w: {new_w}")
     print(f"new_h: {new_h}")
     print(box)
-
+    """
     return cam0_intrinsics_new, cam1_intrinsics_new, None, box
