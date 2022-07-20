@@ -55,12 +55,12 @@ if __name__=="__main__":
 
 
         bash_cmd = cmd_list.copy()
-        bash_cmd[0] = basalt_vio_path
-        bash_cmd[2] = seq_path 
-        bash_cmd[4] = calib_path 
-        bash_cmd[8] = basalt_config_path 
-        bash_cmd[12] = kf_data_path 
-        print(f"executing {bash_cmd}")
+        bash_cmd[0] = str(basalt_vio_path)
+        bash_cmd[2] = str(seq_path) 
+        bash_cmd[4] = str(calib_path) 
+        bash_cmd[8] = str(basalt_config_path) 
+        bash_cmd[12] = str(kf_data_path) 
+        print(f"executing {' '.join(bash_cmd)}")
         print()
         execute(bash_cmd)
         print()
