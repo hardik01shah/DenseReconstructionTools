@@ -321,8 +321,12 @@ class TUMVIDataset(Dataset):
         if num_points > 0:
             for l in lines[1:]:
                 tmp = l.split()
-                x, y, i_depth = round(float(tmp[0])), round(float(tmp[1])), float(tmp[2])
-                depth[0][y][x] = i_depth
+                try:
+                    x, y, i_depth = round(float(tmp[0])), round(float(tmp[1])), float(tmp[2])
+                except:
+                    continue
+                if (y>=0 and y<self.orig_image_size[seq][0] and x>=0 and x<self.orig_image_size[seq][1] and i_depth>=0):
+                    depth[0][y][x] = i_depth
         
         if crop_box:
             depth_cropped = depth[:,crop_box[1]:crop_box[3],crop_box[0]:crop_box[2]]
