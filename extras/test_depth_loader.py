@@ -16,7 +16,8 @@ import yaml
 import shutil
 
 if __name__=="__main__":
-    depth_dir = Path("../../tumvi_data/test/basalt_keyframe_data/keypoints/")
+    depth_dir = Path("../../tumvi_data/test/kf_data/keypoints/")
+    depth_viz_dir = Path("../../tumvi_data/test/kf_data/keypoints_viz/")
     image_dir = Path("../../tumvi_data/test/mav0/cam0/data/")
     save_dir = Path("../../tumvi_data/test/debug_depth/")
 
@@ -27,7 +28,7 @@ if __name__=="__main__":
     times = [tns.replace(".txt", "") for tns in depth_paths]
     
     for tns in times:
-        depth_map[tns] = str(depth_dir / f"{tns}.txt")
+        depth_map[tns] = str(depth_viz_dir / f"{tns}.txt")
     times.sort()
     
     for tns in tqdm(times):
@@ -40,7 +41,7 @@ if __name__=="__main__":
         points_sz = int(lines[0])
         for l in lines[1:]:
             tmp = l.split()
-            x, y, i_depth = int(float(tmp[0])), int(float(tmp[1])), float(tmp[2])
+            x, y, i_depth = round(float(tmp[0])), round(float(tmp[1])), float(tmp[2])
             depth[0][y][x] = i_depth
             img = cv2.circle(img, (x, y), 4, (0, 0, 255), 1)
         cv2.imwrite(str(save_dir / f"{tns}.png"), img)
