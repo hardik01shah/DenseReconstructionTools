@@ -209,7 +209,7 @@ class Rectifier():
         os.makedirs(self.rect_path / "mav0/cam1/data")
 
         shutil.copy(self.dataset_dir / "mav0/cam0/data.csv", self.rect_path / "mav0/cam0")
-        shutil.copy(self.dataset_dir / "mav0/cam0/data.csv", self.rect_path / "mav0/cam0")
+        shutil.copy(self.dataset_dir / "mav0/cam1/data.csv", self.rect_path / "mav0/cam1")
         shutil.copytree(self.dataset_dir / "mav0/imu0", self.rect_path / "mav0/imu0")
         shutil.copytree(self.dataset_dir / "mav0/mocap0", self.rect_path / "mav0/mocap0")
 
