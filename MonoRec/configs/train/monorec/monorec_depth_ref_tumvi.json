@@ -1,0 +1,125 @@
+{
+  "name": "monorec_depth_ref",
+  "n_gpu": 2,
+  "arch": {
+    "type": "MonoRecModel",
+    "args": {
+      "pretrain_mode": 0,
+      "pretrain_dropout": 0,
+      "use_mono": true,
+      "use_stereo": false,
+      "augmentation": "depth",
+      "depth_cp_loc": [
+        "/home/rvlab/Repos/DenseReconstruction/MonoRec/saved/checkpoints/tumvi_checkpoint_depth.pth"
+      ],
+      "mask_cp_loc": [
+        "/home/rvlab/Repos/DenseReconstruction/MonoRec/saved/checkpoints/monorec_mask_ref.pth"
+      ],
+      "freeze_module": [
+        "att"
+      ]
+    }
+  },
+  "data_loader": {
+    "type": "TUMVIDataloader",
+    "args": {
+      "dataset_dir": "../../tumvi-dataset/rectified",
+      "batch_size": 8,
+      "frame_count": 2,
+      "shuffle": true,
+      "validation_split": 0,
+      "num_workers": 0,
+      "sequences": [
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27"
+      ],
+      "target_image_size": [
+        256,
+        512
+      ],
+      "basalt_depth": true,
+      "return_stereo": true
+    }
+  },
+  "val_data_loader": {
+    "type": "TUMVIDataloader",
+    "args": {
+      "dataset_dir": "../../tumvi-dataset/rectified",
+      "batch_size": 8,
+      "frame_count": 2,
+      "shuffle": false,
+      "validation_split": 0,
+      "num_workers": 0,
+      "sequences": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "11"
+      ],
+      "target_image_size": [
+        256,
+        512
+      ],
+      "basalt_depth": true,
+      "return_stereo": true
+    }
+  },
+  "optimizer": {
+    "type": "Adam",
+    "args": {
+      "lr": 0.000001,
+      "weight_decay": 0,
+      "amsgrad": true
+    }
+  },
+  "loss": "depth_refinement_loss",
+  "metrics": [
+    "a1_sparse_metric",
+    "abs_rel_sparse_metric",
+    "rmse_sparse_metric"
+  ],
+  "lr_scheduler": {
+    "type": "StepLR",
+    "args": {
+      "step_size": 15,
+      "gamma": 0.1
+    }
+  },
+  "trainer": {
+    "compute_mask": true,
+    "compute_stereo_pred": true,
+    "mult_mask_on_cv": true,
+    "epochs": 2,
+    "save_dir": "saved/",
+    "save_period": 1,
+    "verbosity": 2,
+    "monitor": "min abs_rel_sparse_metric",
+    "log_step": 10,
+    "alpha": 0.5,
+    "max_distance": 80,
+    "timestamp_replacement": "00",
+    "tensorboard": true
+  }
+}
