@@ -7,7 +7,7 @@ import torchvision
 from PIL import Image
 from scipy.spatial.transform import Rotation
 from torch.utils.data import Dataset
-
+import math
 import os
 import yaml
 import shutil
@@ -324,6 +324,8 @@ class TUMVIDataset(Dataset):
                 try:
                     x, y, i_depth = round(float(tmp[0])), round(float(tmp[1])), float(tmp[2])
                 except:
+                    continue
+                if math.isnan(i_depth):
                     continue
                 if (y>=0 and y<self.orig_image_size[seq][0] and x>=0 and x<self.orig_image_size[seq][1] and i_depth>=0):
                     depth[0][y][x] = i_depth
