@@ -27,11 +27,11 @@ dataset-dir
     ...
 ```
 
-The [realsense_bag](euroc-preparation/realsense_bag) folder consists of the scripts used to prepare the dataset from a bag file recorded from the Realsense camera.
+The [realsense_bag](realsense_bag) folder consists of the scripts used to prepare the dataset from a bag file recorded from the Realsense camera.
 
-The [tumvi](euroc-preparation/tumvi) folder consists of the scripts used for rectification and preparation of the TUM-VI dataset.
+The [tumvi](tumvi) folder consists of the scripts used for rectification and preparation of the TUM-VI dataset.
 
-The [run_basalt_euroc.py](euroc-preparation/run_basalt_euroc.py) script is used for generating the _basalt_keyframe_data_ folder in the above mentioned directory structure.
+The [run_basalt_euroc.py](run_basalt_euroc.py) script is used for generating the _basalt_keyframe_data_ folder in the above mentioned directory structure.
 ```
 usage: run_basalt_euroc.py [-h] tumvi_path basalt_path
 

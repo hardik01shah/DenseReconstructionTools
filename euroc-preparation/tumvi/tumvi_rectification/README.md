@@ -28,7 +28,7 @@ r31 r32 r33 tz
 ```  
 The 3x3 top-left matrix is the rotation matrix and the 3x1 last column is the translation vector (tx, ty, tz).  
 
-For running the scripts for tum-vi rectification, create a new conda environment from the given [environment.yml](euroc-preparation/tumvi/tumvi_rectification/environment.yml) file using:
+For running the scripts for tum-vi rectification, create a new conda environment from the given [environment.yml](environment.yml) file using:
 ```
 conda env create -f environment.yml
 ```
