@@ -13,9 +13,9 @@ dataset-dir
     |    │   └── poses
     |    ├── dso
     |    │   ├── cam0
-    |    │   │   └── images -> /home/rvlab/Repos/tumvi-dataset/rectified/27/mav0/cam0/data
+    |    │   │   └── images -> ../../mav0/cam0/data
     |    │   └── cam1
-    |    │       └── images -> /home/rvlab/Repos/tumvi-dataset/rectified/27/mav0/cam1/data
+    |    │       └── images -> ../../mav0/cam1/data
     |    ├── mav0
     |        ├── cam0
     |        │   └── data
