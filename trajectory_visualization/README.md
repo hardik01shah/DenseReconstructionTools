@@ -18,7 +18,7 @@ E.g.
 python3 viz_trajectory.py ./trajectories.txt
 ```  
 
-The [trajectories.txt](trajectories.txt) file has been generated to check the script. The poses are generated such that the camera moves in a cricle in a plane always facing the center. (shown below)
+The [trajectories.txt](trajectories.txt) file has been generated to check the script. The poses are generated such that the camera moves in a cricle in a plane always facing the center. (shown below)  
 ![demo](demo.png)  
 
 Another demo image of the poses of the hka-outdoors-1 sequence visualized:
