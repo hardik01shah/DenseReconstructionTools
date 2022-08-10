@@ -31,7 +31,7 @@ The [realsense_bag](realsense_bag) folder consists of the scripts used to prepar
 
 The [tumvi](tumvi) folder consists of the scripts used for rectification and preparation of the TUM-VI dataset.
 
-The [run_basalt_euroc.py](run_basalt_euroc.py) script is used for generating the _basalt_keyframe_data_ folder in the above mentioned directory structure.
+The [run_basalt_euroc.py](run_basalt_euroc.py) script is used for generating the _basalt_keyframe_data_ folder in the above mentioned directory structure. It basically runs basalt on each of the sequences and saves the keypoints and poses.
 ```
 usage: run_basalt_euroc.py [-h] tumvi_path basalt_path
 
