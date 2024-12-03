@@ -8,9 +8,13 @@ The dense reconstruction network selected i.e. MonoRec requires relative camera 
 The euroc dataset format is used for training and inference of MonoRec. The euroc dataset must be generated from a bag recording of the Realsense camera or the TUM-VI dataset.
 
 The main components of this repository are:
-1. Preparation of euroc dataset for MonoRec `euroc-preparation <euroc-preparation>`_
-    - from the `tum-vi dataset <https://vision.in.tum.de/data/datasets/visual-inertial-dataset>`_
-    - from bag file generated from the Realsense Depth Camera D455
-    - running Basalt on the datasets for pose and keypoint extraction
-2. Visualization of poses generated from Basalt (for debugging) `trajectory_visualization <trajectory_visualization>`_
-3. Testing of dataloaders from MonoRec and keypoints generated from Basalt `extras <extras>`_
+
+#. Preparation of euroc dataset for MonoRec [`euroc-preparation <euroc-preparation>`_].
+
+    * from the [`tum-vi dataset <https://vision.in.tum.de/data/datasets/visual-inertial-dataset>`_]
+    * from bag file generated from the Realsense Depth Camera D455
+    * running Basalt on the datasets for pose and keypoint extraction
+
+#. Visualization of poses generated from Basalt (for debugging) [`trajectory_visualization <trajectory_visualization>`_]
+
+#. Testing of dataloaders from MonoRec and keypoints generated from Basalt [`extras <extras>`_]
