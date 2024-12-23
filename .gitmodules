@@ -1,0 +1,8 @@
+[submodule "MonoRec"]
+	path = MonoRec
+	url = https://github.com/RobotVisionHKA/MonoRec.git
+	branch = main
+[submodule "basalt"]
+	path = basalt
+	url = https://github.com/RobotVisionHKA/basalt.git
+	branch = master
