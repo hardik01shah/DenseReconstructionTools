@@ -1,6 +1,6 @@
 # Monocular Dense 3D Reconstruction Toolkit
 
-Documentation and tutorials are available [here](https://hardik01shah.github.io/DenseReconstructionTools/#).
+**Documentation and tutorials are available [here](https://hardik01shah.github.io/DenseReconstructionTools/#).**
 
 ## Introduction
 
