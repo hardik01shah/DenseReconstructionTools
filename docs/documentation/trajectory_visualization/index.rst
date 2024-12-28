@@ -1,7 +1,7 @@
 Trajectory Visualization
 ========================
 
-The `viz_trajectory.py <../../../trajectory_visualization/viz_trajectory.py>`_ script is used for
+The `viz_trajectory.py <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/trajectory_visualization/viz_trajectory.py>`_ script is used for
 visualization of poses from a text file in the format 'ts px py pz qx qy qz qw' where *ts* is the
 timestamp in ns and *(px py pz)* is the translation and *(qx qy qz qw)* is the rotation in quaternion in
 the **quaternion last** format. The script is used for debugging the output poses saved from the marginalization queue of Basalt.
@@ -25,7 +25,7 @@ Running the script:
     E.g.
     python3 viz_trajectory.py ./trajectories.txt
 
-The `trajectories.txt <../../../trajectory_visualization/trajectories.txt>`_ file has been generated to check the script.
+The `trajectories.txt <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/trajectory_visualization/trajectories.txt>`_ file has been generated to check the script.
 The poses are generated such that the camera moves in a circle in a plane always facing the center. (shown below)
 
 .. image:: ../../../trajectory_visualization/demo.png
@@ -36,5 +36,5 @@ Another demo image of the poses of the hka-outdoors-1 sequence visualized:
 
 --------------------------------------------
 
-`quiver3d_demo.py <../../../trajectory_visualization/quiver3d_demo.py>`_ is just a demo script for
+`quiver3d_demo.py <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/trajectory_visualization/quiver3d_demo.py>`_ is just a demo script for
 visualizing the arrow object in a matplotlib window. [`ref <https://gist.github.com/WetHat/1d6cd0f7309535311a539b42cccca89c>`_]

@@ -39,7 +39,7 @@ The camera extrinsics are represented in the homogenous matrix format of 4x4 as:
 The 3x3 top-left matrix is the rotation matrix and the 3x1 last column is the translation vector (tx, ty, tz).  
 
 For running the scripts for tum-vi rectification, create a new conda environment from
-the given `environment.yml <../../../environment.yml>`_ file using:
+the given `environment.yml <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/environment.yml>`_ file using:
 
 .. code-block:: text
 
@@ -48,10 +48,10 @@ the given `environment.yml <../../../environment.yml>`_ file using:
 Scripts
 -------
 
-1. `tumvi_preparation.py <../../../euroc-preparation/tumvi/tumvi_preparation.py>`_
+1. `tumvi_preparation.py <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/euroc-preparation/tumvi/tumvi_preparation.py>`_
 is used for getting the downloaded and extracted sequences in the required format i.e. renaming sequences names to _00_, _01_ ..
 
-2. `rectify.py <../../../euroc-preparation/tumvi/tumvi_rectification/rectify.py>`_
+2. `rectify.py <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/euroc-preparation/tumvi/tumvi_rectification/rectify.py>`_
 is used for rectification of a single tum-vi sequence. The script also has the option
 of saving the updated basalt calibration file using the new intrinsics and extrinsics.
 
@@ -82,7 +82,7 @@ of saving the updated basalt calibration file using the new intrinsics and extri
         E.g.
         python3 rectify.py -fov 0.25 -sc 0.5 -rp test ../../tumvi_data/dataset-outdoors1_1024_16
 
-3. `rectify_full_tumvi.py <../../../euroc-preparation/tumvi/tumvi_rectification/rectify_full_tumvi.py>`_ is
+3. `rectify_full_tumvi.py <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/euroc-preparation/tumvi/tumvi_rectification/rectify_full_tumvi.py>`_ is
 used for rectification of the tum-vi dataset i.e. contains several sequences.
 
     .. code-block:: text
@@ -106,7 +106,7 @@ used for rectification of the tum-vi dataset i.e. contains several sequences.
         E.g.
         python rectify_full_tumvi.py -fov 0.25 -sc 0.5 -bp ../basalt ../../tumvi-dataset/
 
-4. `prep_basalt.py <../../../euroc-preparation/tumvi/tumvi_rectification/prep_basalt.py>`_ is
+4. `prep_basalt.py <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/euroc-preparation/tumvi/tumvi_rectification/prep_basalt.py>`_ is
 used for generating a json calibration file for running basalt from a euroc dataset
 i.e. dso/camchain.yaml
 

@@ -54,7 +54,7 @@ Conversion of Bag file to Euroc
 The recording from the *realsense-viewer* is by default saved as a bag file.
 Sensor information must be extracted from the bag file into the proper Euroc format so that Basalt (VIO) and
 MonoRec (dense reconstruction) can be run on them. This is done using the python
-package `rosbag <https://pypi.org/project/rosbags/>`_ in the `bag2euroc.py <../../../euroc-preparation/realsense_bag/bag2euroc.py>`_ script.  
+package `rosbag <https://pypi.org/project/rosbags/>`_ in the `bag2euroc.py <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/euroc-preparation/realsense_bag/bag2euroc.py>`_ script.  
 **Basalt requires that the Accel and Gyro values are synced and that both sensor information should be available for a timestamp at the same frame rate.**
 Hence, linear interpolation is done of the Accel values of the two nearest timestamps for each Gyro value.  
 Running the script:
@@ -76,7 +76,7 @@ Running the script:
     python3 bag2euroc.py ./final.bag ./euroc/
 
 There were other methods of extracting the data from a bagfile:  
-1. `bag2euroc_playback.py <../../../euroc-preparation/realsense_bag/bag2euroc_playback.py>`_ is a rospy script (requires a ros installation).
+1. `bag2euroc_playback.py <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/euroc-preparation/realsense_bag/bag2euroc_playback.py>`_ is a rospy script (requires a ros installation).
 The bag file needs to be played using *rosbag play* and the script is basically a ROS subscriber which subscribes to the topics of interest and saves sensor information.  
 
     .. code-block:: text
@@ -89,4 +89,4 @@ The bag file needs to be played using *rosbag play* and the script is basically 
         * the second command waits for 10s after advertising the topics before streaming the data on the topics. It is for the subscriber to have enough time to latch onto the topics.
 
 2. Another python package *bagpy* is used to extract the data into .csv files.
-Demonstrated in `bagpy_test.ipynb <../../../euroc-preparation/realsense_bag/bagpy_test.ipynb>`_.
+Demonstrated in `bagpy_test.ipynb <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/euroc-preparation/realsense_bag/bagpy_test.ipynb>`_.

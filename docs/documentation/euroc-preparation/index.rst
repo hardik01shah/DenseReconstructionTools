@@ -38,7 +38,7 @@ The images must be from a camera-model of type *pinhole*. The number *00* repres
     tumvi
 
 
-The `run_basalt_euroc.py <../../../euroc-preparation/run_basalt_euroc.py>`_ script is used for generating
+The `run_basalt_euroc.py <https://github.com/hardik01shah/DenseReconstructionTools/blob/master/euroc-preparation/run_basalt_euroc.py>`_ script is used for generating
 the *basalt_keyframe_data* folder in the above mentioned directory structure.
 It runs basalt on each of the sequences and saves the keypoints and poses.
 
