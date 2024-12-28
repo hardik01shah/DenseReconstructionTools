@@ -1,4 +1,4 @@
-name: img_rect
+name: dense_reconstruction_toolkit
 channels:
   - defaults
 dependencies:
@@ -430,4 +430,3 @@ dependencies:
     - opencv-contrib-python==4.6.0.66
     - opencv-python==4.6.0.66
     - pip==22.1.2
-prefix: /home/rvlab/anaconda3/envs/img_rect
