@@ -18,7 +18,7 @@ The primary additions are:
 TUM-VI dataloader
 -----------------
 
-The `tum-vi dataloader <https://github.com/RobotVisionHKA/MonoRec/data_loader/tum_vi_dataset.py>`_ has been written in a way so that 
+The `tum-vi dataloader <https://github.com/RobotVisionHKA/MonoRec/blob/main/data_loader/tum_vi_dataset.py>`_ has been written in a way so that 
 it expects the dataset to be in a specific format as shown below:  
 
 .. code-block:: text
@@ -97,9 +97,9 @@ Inference
 ---------
 
 The `example-tumvi <example-tumvi>`_ folder can be used to test the forward pass using the tum-vi dataloader. 
-The `test_monorec.py <https://github.com/RobotVisionHKA/MonoRec/example-tumvi/test_monorec.py>`_ script can be used to 
+The `test_monorec.py <https://github.com/RobotVisionHKA/MonoRec/blob/main/example-tumvi/test_monorec.py>`_ script can be used to 
 test inference on an entire dataset i.e. with multiple sequences, and 
-the `test_monorec_seq.py <https://github.com/RobotVisionHKA/MonoRec/example-tumvi/test_monorec_seq.py>`_ 
+the `test_monorec_seq.py <https://github.com/RobotVisionHKA/MonoRec/blob/main/example-tumvi/test_monorec_seq.py>`_ 
 can be used to test inference on a single sequence. 
   
 Make sure to activate the conda environment for both inference and training using:  
@@ -120,11 +120,11 @@ Pointcloud generation
 ---------------------
 
 To evaluate the model, a pointcloud can be generated. `CloudCompare <https://www.danielgm.net/cc/>`_ was used for 
-viewing the generated pointclouds. Either `rgbd2pcl.py <https://github.com/RobotVisionHKA/MonoRec/rgbd2pcl.py>`_ or 
-`create_pointcloud.py <https://github.com/RobotVisionHKA/MonoRec/create_pointcloud.py>`_ can be used. 
-Usage of `rgbd2pcl.py <https://github.com/RobotVisionHKA/MonoRec/rgbd2pcl.py>`_ is mentioned above.  
+viewing the generated pointclouds. Either `rgbd2pcl.py <https://github.com/RobotVisionHKA/MonoRec/blob/main/rgbd2pcl.py>`_ or 
+`create_pointcloud.py <https://github.com/RobotVisionHKA/MonoRec/blob/main/create_pointcloud.py>`_ can be used. 
+Usage of `rgbd2pcl.py <https://github.com/RobotVisionHKA/MonoRec/blob/main/rgbd2pcl.py>`_ is mentioned above.  
 
-Usage for `create_pointcloud.py <https://github.com/RobotVisionHKA/MonoRec/create_pointcloud.py>`_:  
+Usage for `create_pointcloud.py <https://github.com/RobotVisionHKA/MonoRec/blob/main/create_pointcloud.py>`_:  
 
 .. code-block:: bash
 

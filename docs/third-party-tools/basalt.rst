@@ -67,32 +67,32 @@ Here are the changes that were made on top of the existing Basalt code:
 
 5. For saving keypoints from the visualization queue, whenever data is pushed into the viz_queue, keypoints 
    are directly saved if the 'keyframe_data_path' is valid. Done in 
-   the `sqrt_keypoint_vio.cpp <https://github.com/RobotVisionHKA/basalt/src/vi_estimator/sqrt_keypoint_vio.cpp>`_ file.    
+   the `sqrt_keypoint_vio.cpp <https://github.com/RobotVisionHKA/basalt/blob/master/src/vi_estimator/sqrt_keypoint_vio.cpp>`_ file.    
 
 Changed files
 -------------
 
-1. `vio.cpp <https://github.com/RobotVisionHKA/basalt/src/vio.cpp>`_
+1. `vio.cpp <https://github.com/RobotVisionHKA/basalt/blob/master/src/vio.cpp>`_
     - add flag for saving keyframe_data
     - change call to ``MargDataSaver``. add arguments - ``keyframe_data_path`` and calib data  
     - change call to initialize vio estimator. add argument - ``keyframe_data_path``  
  
-2. `vio_sim.cpp <https://github.com/RobotVisionHKA/basalt/src/vio_sim.cpp>`_  
+2. `vio_sim.cpp <https://github.com/RobotVisionHKA/basalt/blob/master/src/vio_sim.cpp>`_  
     - change call to ``MargDataSaver``. add arguments - ``keyframe_data_path`` and calib data   
 
-3. `marg_data_io.cpp <https://github.com/RobotVisionHKA/basalt/src/io/marg_data_io.cpp>`_ and `marg_data_io.h <https://github.com/RobotVisionHKA/basalt/include/basalt/io/marg_data_io.h>`_
+3. `marg_data_io.cpp <https://github.com/RobotVisionHKA/basalt/blob/master/src/io/marg_data_io.cpp>`_ and `marg_data_io.h <https://github.com/RobotVisionHKA/basalt/blob/master/include/basalt/io/marg_data_io.h>`_
     - save poses from the margdata queue
     - save keypoints in cam frame (if '``keyframe_data_path``' is valid)
     - save keypoints in imu frame (if '``keyframe_data_path``' is valid)  
 
-4. `sqrt_keypoint_vio.cpp <https://github.com/RobotVisionHKA/basalt/src/vi_estimator/sqrt_keypoint_vio.cpp>`_ and `sqrt_keypoint_vio.h <https://github.com/RobotVisionHKA/basalt/include/basalt/vi_estimator/sqrt_keypoint_vio.h>`_
+4. `sqrt_keypoint_vio.cpp <https://github.com/RobotVisionHKA/basalt/blob/master/src/vi_estimator/sqrt_keypoint_vio.cpp>`_ and `sqrt_keypoint_vio.h <https://github.com/RobotVisionHKA/basalt/blob/master/include/basalt/vi_estimator/sqrt_keypoint_vio.h>`_
     - compute and add keypoint information when data is being pushed into the margdata queue
     - save keypoints directly before pushing into the viz_queue (if '``keyframe_data_path``' is valid)  
 
-5. `sqrt_keypoint_vo.cpp <https://github.com/RobotVisionHKA/basalt/src/vi_estimator/sqrt_keypoint_vo.cpp>`_, `sqrt_keypoint_vo.h <https://github.com/RobotVisionHKA/basalt/include/basalt/vi_estimator/sqrt_keypoint_vo.h>`_ and `vio_estimator.h <https://github.com/RobotVisionHKA/basalt/include/basalt/vi_estimator/vio_estimator.h>`_ 
+5. `sqrt_keypoint_vo.cpp <https://github.com/RobotVisionHKA/basalt/blob/master/src/vi_estimator/sqrt_keypoint_vo.cpp>`_, `sqrt_keypoint_vo.h <https://github.com/RobotVisionHKA/basalt/blob/master/include/basalt/vi_estimator/sqrt_keypoint_vo.h>`_ and `vio_estimator.h <https://github.com/RobotVisionHKA/basalt/blob/master/include/basalt/vi_estimator/vio_estimator.h>`_ 
     - change function definitions. add argument - ``keyframe_data_path``
 
-6. `imu_types.h <https://github.com/RobotVisionHKA/basalt/include/basalt/utils/imu_types.h>`_  
+6. `imu_types.h <https://github.com/RobotVisionHKA/basalt/blob/master/include/basalt/utils/imu_types.h>`_  
     - change data structure of ``MargDataPtr`` for saving keypoints  
 
 Running VIO
