@@ -75,7 +75,7 @@ The overall pipeline of dataloading goes as follows:
 PointCloud Visualization using open3d
 -------------------------------------
 
-The `rgbd2pcl.py <rgbd2pcl.py>`_ script is used to generate and view pointclouds from the keyframe, 
+The `rgbd2pcl.py <https://github.com/RobotVisionHKA/MonoRec/blob/main/rgbd2pcl.py>`_ script is used to generate and view pointclouds from the keyframe, 
 predicted depth, camera intrinsics and extrinsics. It also saves the keyframes and the predicted depth maps 
 in the save directory mentioned in the config file (can be used for debugging). It uses Open3d for the same. 
 [`ref1 <http://www.open3d.org/docs/latest/tutorial/Advanced/multiway_registration.html#Make-a-combined-point-cloud>`_] 
@@ -96,7 +96,7 @@ E.g.
 Inference
 ---------
 
-The `example-tumvi <example-tumvi>`_ folder can be used to test the forward pass using the tum-vi dataloader. 
+The `example-tumvi <https://github.com/RobotVisionHKA/MonoRec/blob/main/example-tumvi>`_ folder can be used to test the forward pass using the tum-vi dataloader. 
 The `test_monorec.py <https://github.com/RobotVisionHKA/MonoRec/blob/main/example-tumvi/test_monorec.py>`_ script can be used to 
 test inference on an entire dataset i.e. with multiple sequences, and 
 the `test_monorec_seq.py <https://github.com/RobotVisionHKA/MonoRec/blob/main/example-tumvi/test_monorec_seq.py>`_ 
