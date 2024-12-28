@@ -7,3 +7,4 @@ extras/testfile
 extras/stats_all.ubjson
 extras/stats_sums.ubjson
 extras/stats_vio.ubjson
+**/_build/*
