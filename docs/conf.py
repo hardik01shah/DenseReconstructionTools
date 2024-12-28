@@ -18,9 +18,10 @@
 # -- Project information -----------------------------------------------------
 
 project = "Dense Reconstruction Toolkit"
-copyright = "2024, Robot Vision Lab, HKA"
 author = "Hardik Shah, Niclas Zeller"
+copyright = f"2024, Robot Vision Lab, HKA. Author(s): {author}"
 
+version = "latest"
 
 # -- General configuration ---------------------------------------------------
 # -- General configuration
